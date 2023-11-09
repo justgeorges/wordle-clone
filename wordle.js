@@ -9,6 +9,7 @@ async function init() {
   const res = await fetch("https://words.dev-apis.com/word-of-the-day");
   const resObj = await res.json();
   const word = resObj.word.toUpperCase();
+  const wordParts = word.split("");
   setLoading(false);
 
   function addLetter(letter) {
@@ -34,6 +35,27 @@ async function init() {
     // TODO validate the word
 
     // TODO do all the marking as "correct" "close" or "wrong"
+
+    const guessParts = currentGuess.split("");
+    const map = makeMap(wordParts);
+
+    //mark as correct
+    for (let i = 0; i < ANSWER_LENGTH; i++) {
+      if (guessParts[i] === wordParts[i]) {
+        letters[currentRow * ANSWER_LENGTH + i].classList.add("correct");
+        map[guessParts[i]]--;
+      }
+    }
+    for (let i = 0; i < ANSWER_LENGTH; i++) {
+      if (guessParts[i] === wordParts[i]) {
+        // do nothing (already done)
+      } else if (wordParts.includes(guessParts[i]) && map[guessParts[i]] > 0) {
+        // mark as close
+        letters[currentRow * ANSWER_LENGTH + i].classList.add("close");
+      } else {
+        letters[currentRow * ANSWER_LENGTH + i].classList.add("wrong");
+      }
+    }
 
     // TODO win or lose?
 
@@ -69,4 +91,15 @@ function setLoading(isLoading) {
   loadingDiv.classList.toggle("show", isLoading);
 }
 
+function makeMap(array) {
+  const obj = [];
+  for (let i = 0; i < array.length; i++) {
+    const letter = array[i];
+    if (obj[letter]) {
+      obj[letter]++;
+    } else {
+      obj[letter] = 1;
+    }
+  }
+}
 init();
