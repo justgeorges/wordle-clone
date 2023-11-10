@@ -1,6 +1,9 @@
 const letters = document.querySelectorAll(".scoreboard-letter");
 const loadingDiv = document.querySelector(".info-bar");
 const ANSWER_LENGTH = 5;
+let done = false;
+const ROUNDS = 6;
+let isLoading = true;
 
 async function init() {
   let currentGuess = "";
@@ -10,7 +13,9 @@ async function init() {
   const resObj = await res.json();
   const word = resObj.word.toUpperCase();
   const wordParts = word.split("");
+  // TODO refactor the 2 lines below to make them look nicer
   setLoading(false);
+  isLoading = false;
 
   function addLetter(letter) {
     if (currentGuess.length < ANSWER_LENGTH) {
@@ -31,10 +36,6 @@ async function init() {
       // do nothing
       return;
     }
-
-    // TODO validate the word
-
-    // TODO do all the marking as "correct" "close" or "wrong"
 
     const guessParts = currentGuess.split("");
     const map = makeMap(wordParts);
@@ -57,8 +58,13 @@ async function init() {
       }
     }
 
-    // TODO win or lose?
-
+    if (currentGuess === word) {
+      alert("you win!");
+      done = true;
+    } else if (currentRow === ROUNDS) {
+      alert(`you lost! the word was ${word}`);
+      done = true;
+    }
     currentRow++;
     currentGuess = "";
   }
@@ -69,6 +75,11 @@ async function init() {
   }
 
   document.addEventListener("keydown", function handleKeyPress(event) {
+    if (done || isLoading) {
+      // do nothing
+      return;
+    }
+
     const action = event.key;
 
     if (action === "Enter") {
