@@ -77,7 +77,7 @@ async function init() {
     }
 
     if (currentGuess === word) {
-      alert("you win!");
+      document.querySelector(".brand").classList.add("winnder");
       done = true;
     } else if (currentRow === ROUNDS) {
       alert(`you lost! the word was ${word}`);
